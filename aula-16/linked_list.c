@@ -1,71 +1,78 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 struct Node {
   int data;
   struct Node *next;
 };
 
-void push(struct Node **head_ref, int new_data) {
-  struct Node *new_node = malloc(sizeof(struct Node));
+struct LinkedList {
+  struct Node *front;
+};
 
-  if (!new_node) {
-    printf("Linked list full!\n");
+void initialize(struct LinkedList *linked_list) {
+  linked_list->front = NULL;
+}
+
+void push(struct LinkedList *linked_list, int data) {
+  struct Node *node = malloc(sizeof(struct Node));
+
+  if (!node) {
+    printf("List is full!\n");
     return;
   }
 
-  new_node->data = new_data;
-  new_node->next = *head_ref;
+  node->data = data;
+  node->next = linked_list->front;
 
-  *head_ref = new_node;
+  linked_list->front = node;
 }
 
-int pop(struct Node **head_ref) {
-  if (!*head_ref) {
-    printf("Linked list empty!\n");
+int pop(struct LinkedList *linked_list) {
+  struct Node *node = linked_list->front;
+
+  if (!node) {
+    printf("List is empty!\n");
     return 0;
   }
 
-  struct Node *temp = *head_ref;
-  int data = temp->data;
+  int data = node->data;
 
-  *head_ref = (*head_ref)->next;
+  linked_list->front = linked_list->front->next;
 
-  free(temp);
+  free(node);
 
   return data;
 }
 
-void print_node(struct Node *node) {
-  while (node) {
-    printf("[data] [%d] -> [next] [%p]\n", node->data, node->next, node->next);
-    node = node->next;
-  }
-}
-
-int sum_all(struct Node *node) {
-  int sum = 0;
-
-  while (node) {
-    sum += node->data;
-    node = node->next;
+void print_list(struct LinkedList linked_list) {
+  if (!linked_list.front) {
+    printf("List is empty!\n");
+    return 0;
   }
 
-  return sum;
+  while (linked_list.front) {
+    printf("%d ", linked_list.front->data);
+    linked_list.front = linked_list.front->next;
+  }
+
+  printf("\n");
 }
 
 int main() {
-  struct Node *node = NULL;
+  struct LinkedList linked_list;
 
-  push(&node, 1);
-  push(&node, 2);
-  push(&node, 3);
-  push(&node, 4);
+  initialize(&linked_list);
+  
+  push(&linked_list, 10);
+  push(&linked_list, 20);
+  push(&linked_list, 30);
+  push(&linked_list, 40);
+  push(&linked_list, 50);
 
-  pop(&node);
+  pop(&linked_list);
+  pop(&linked_list);
+  pop(&linked_list);
 
-  print_node(node);
-
-  printf("%d\n", sum_all(node));
+  print_list(linked_list);
 }
