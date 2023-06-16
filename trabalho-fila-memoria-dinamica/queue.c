@@ -5,58 +5,67 @@
 #include "queue.h"
 #include "random_int.h"
 
-void initialize(Queue *queue, int size) {
-  queue->numbers = malloc(size * sizeof(int));
-  queue->position = -1;
-  queue->size = size;
+void initialize(struct Queue *queue) {
+  queue->head = queue->tail = NULL;
 }
 
-void enqueue(Queue *queue, int number) {
-  if (queue->position + 1 == queue->size) {
+void enqueue(struct Queue *queue, int data) {
+  struct Node *node = malloc(sizeof(struct Node));
+
+  if (!node) {
+    printf("Queue is full!\n");
     return;
   }
 
-  ++queue->position;
+  node->data = data;
+  node->next = NULL;
 
-  queue->numbers[queue->position] = number;
+  if (!queue->head || !queue->tail) {
+    queue->head = queue->tail = node;
+    return;
+  }
+
+  queue->head = queue->head->next = node;
 }
 
-int dequeue(Queue *queue) {
-  if (queue->position == -1) {
+int dequeue(struct Queue *queue) {
+  struct Node *node = queue->tail;
+  int data = node->data;
+
+  if (!node) {
+    printf("Queue is empty!");
     return 0;
   }
 
-  int out = queue->numbers[0];
+  queue->tail = queue->tail->next;
 
-  for (int i = 0; i < queue->position; ++i) {
-    queue->numbers[i] = queue->numbers[i + 1];
-  }
+  free(node);
 
-  --queue->position;
-
-  return out;
+  return data;
 }
 
-int peek(Queue queue) {
-  if (queue.position == -1) {
+int peek(struct Queue queue) {
+  if (!queue.tail) {
+    printf("Queue is empty!");
     return 0;
   }
 
-  return queue.numbers[queue.position];
+  return queue.tail->data;
 }
 
-void print_queue(Queue queue) {
-  for (int i = 0; i <= queue.position; ++i) {
-    //printf("[%d] ", queue.numbers[i]);
+void print_queue(struct Queue queue) {
+  while (queue.tail) {
+    //printf("[%d] ", queue.tail->data);
+    queue.tail = queue.tail->next;
   }
 
   puts("");
 }
 
-Queue create_and_fill_queue(int size) {
-  Queue queue;
+struct Queue create_and_fill_queue(int size) {
+  struct Queue queue;
 
-  initialize(&queue, size);
+  initialize(&queue);
 
   for (int i = 0; i < size; ++i) {
     enqueue(&queue, random_int());
@@ -65,8 +74,8 @@ Queue create_and_fill_queue(int size) {
   return queue;
 }
 
-void free_queue(Queue *queue) {
-  for (int i = 0; i <= queue->position; ++i) {
+void free_queue(struct Queue *queue) {
+  while(queue->tail) {
     dequeue(queue);
   }
 }
@@ -74,7 +83,7 @@ void free_queue(Queue *queue) {
 double stress_test_insert(int size) {
   double start;
   double elapsed;
-  Queue queue;
+  struct Queue queue;
 
   start = clock();
   queue = create_and_fill_queue(size);
@@ -86,7 +95,7 @@ double stress_test_insert(int size) {
 double stress_test_delete(int size) {
   double start;
   double elapsed;
-  Queue queue = create_and_fill_queue(size);
+  struct Queue queue = create_and_fill_queue(size);
 
   start = clock();
   free_queue(&queue);
@@ -98,7 +107,7 @@ double stress_test_delete(int size) {
 double stress_test_print(int size) {
   double start;
   double elapsed;
-  Queue queue = create_and_fill_queue(size);
+  struct Queue queue = create_and_fill_queue(size);
   
   start = clock();
   print_queue(queue);

@@ -1,22 +1,26 @@
-typedef struct {
-  int *numbers;
-  int position;
-  int size;
-} Queue;
+struct Node {
+  int data;
+  struct Node *next;
+};
 
-void initialize(Queue *queue, int size);
+struct Queue {
+  struct Node *tail;
+  struct Node *head;
+};
 
-void enqueue(Queue *queue, int number);
+void initialize(struct Queue *queue);
 
-int dequeue(Queue *queue);
+void enqueue(struct Queue *queue, int data);
 
-int peek(Queue queue);
+int dequeue(struct Queue *queue);
 
-void print_queue(Queue queue);
+int peek(struct Queue queue);
 
-Queue create_and_fill_queue(int size);
+void print_queue(struct Queue queue);
 
-void free_queue(Queue *queue);
+struct Queue create_and_fill_queue(int size);
+
+void free_queue(struct Queue *queue);
 
 double stress_test_insert(int size);
 
